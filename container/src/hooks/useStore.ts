@@ -6,6 +6,7 @@ import {
 } from "../store/features/counter/counterSlice";
 import { getAllProduct } from "../store/features/product/productSlice";
 import { setSelectedProvider } from "../store/features/providers/providersSlice";
+import { setSelectedMenuItem } from "../store/features/menu/menuSlice";
 
 export default function useStore() {
   const dispatch = useStoreDispatch();
@@ -27,11 +28,16 @@ export default function useStore() {
     dispatch(setSelectedProvider(provider));
   };
 
+  const changeMenuItem = (menuItem: string) => {
+    dispatch(setSelectedMenuItem(menuItem));
+  };
+
   return {
     incrementCounter,
     decrementCounter,
     incrementByAmountCounter,
     getProductList,
     changeProvider,
+    changeMenuItem,
   };
 }

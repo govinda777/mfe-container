@@ -28,3 +28,9 @@ export interface CounterState {
 export interface ProvidersState {
   selectedProvider: string;
 }
+
+// INFO (serif) : Menu State Types
+
+export interface MenuState {
+  selectedMenuItem: string;
+}
