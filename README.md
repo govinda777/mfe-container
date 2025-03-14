@@ -4,11 +4,13 @@
 
 1. [Visão Geral do Projeto](#visão-geral-do-projeto)
 2. [Configuração e Instalação](#configuração-e-instalação)
-3. [Arquitetura](#arquitetura)
-4. [Gerenciamento de Estado](#gerenciamento-de-estado)
-5. [Componentes](#componentes)
-6. [Fluxo de Desenvolvimento](#fluxo-de-desenvolvimento)
-7. [Estrutura de Arquivos e Pastas](#estrutura-de-arquivos-e-pastas)
+3. [Scripts e Ferramentas](#scripts-e-ferramentas)
+4. [Testes](#testes)
+5. [Arquitetura](#arquitetura)
+6. [Gerenciamento de Estado](#gerenciamento-de-estado)
+7. [Componentes](#componentes)
+8. [Fluxo de Desenvolvimento](#fluxo-de-desenvolvimento)
+9. [Estrutura de Arquivos e Pastas](#estrutura-de-arquivos-e-pastas)
 
 ## Visão Geral do Projeto
 
@@ -25,6 +27,8 @@ Este projeto é uma aplicação micro-frontend construída utilizando React, Typ
 - **Redux Toolkit**: Biblioteca de gerenciamento de estado
 - **Ant Design**: Biblioteca de componentes de UI
 - **Tailwind CSS**: Framework CSS utilitário
+- **Jest**: Framework de testes unitários
+- **Cypress**: Framework de testes end-to-end
 
 ## Configuração e Instalação
 
@@ -70,6 +74,37 @@ Este projeto é uma aplicação micro-frontend construída utilizando React, Typ
 3. Acesse as aplicações:
    - Container: http://localhost:3000
    - Remote: http://localhost:3001
+
+## Scripts e Ferramentas
+
+O projeto inclui scripts úteis para desenvolvimento e manutenção:
+
+### Scripts Globais
+
+- **generate-tree.sh**: Gera uma árvore de diretórios atualizada do projeto
+- **run-tests.sh**: Executa todos os testes do projeto (unitários e E2E)
+
+### Scripts do Container e Remote
+
+- **npm start**: Inicia o servidor de desenvolvimento
+- **npm test**: Executa testes unitários
+- **npm run build**: Gera build de produção
+- **npm run cypress**: (Container) Executa testes E2E
+- **npm run cypress:open**: (Container) Abre interface do Cypress
+
+## Testes
+
+O projeto utiliza Jest para testes unitários e Cypress para testes E2E:
+
+### Testes Unitários
+- Localizados em arquivos `.test.tsx`
+- Executados via `npm test`
+- Testam componentes, hooks e lógica de negócio
+
+### Testes End-to-End
+- Localizados em `cypress/e2e`
+- Testam fluxos completos da aplicação
+- Arquivos principais: `app.cy.ts`, `components.cy.ts`, `store.cy.ts`
 
 
 ## Estrutura de Arquivos e Pastas
