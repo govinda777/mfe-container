@@ -1,17 +1,25 @@
-import { Button, Card, Typography, Space, Row, Col } from "antd";
+import { Button, Card, Typography, Space, Row, Col, Alert } from "antd";
 import useStore from "container/hooks/useStore";
 import { useStoreSelector } from "container/hooks/useStoreSelector";
 import React from "react";
 
 export default function TestPage() {
-  const { decrementCounter, incrementByAmountCounter, incrementCounter, getProductList } = useStore();
+  const { decrementCounter, incrementByAmountCounter, incrementCounter, getProductList, changeProvider } = useStore();
   const {
     counter: { value },
     product: { products },
+    providers: { selectedProvider },
   } = useStoreSelector((state) => state);
 
   return (
     <Card title="Test Page From Remote Application" bordered>
+      <Alert
+        message={`Selected Provider: ${selectedProvider}`}
+        type="info"
+        showIcon
+        style={{ marginBottom: 16 }}
+      />
+      
       <Typography.Text strong>Counter value: {value}</Typography.Text>
       
       <Space style={{ marginTop: 16 }}>

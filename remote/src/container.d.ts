@@ -60,6 +60,7 @@ declare module "container/hooks/useStore" {
     decrementCounter: () => void;
     incrementByAmountCounter: (amount: number) => void;
     getProductList: () => void;
+    changeProvider: (provider: string) => void;
   };
 
   export default useStore;
@@ -85,13 +86,17 @@ declare module "container/types/storeState" {
   export interface CounterState {
     value: number;
   }
+  export interface ProvidersState {
+    selectedProvider: string;
+  }
 }
 
 declare module "container/hooks/useStoreSelector" {
-  import type { CounterState, ProductState } from "container/types/storeState";
+  import type { CounterState, ProductState, ProvidersState } from "container/types/storeState";
   export type RootState = {
     counter: CounterState;
     product: ProductState;
+    providers: ProvidersState;
   };
 
   export interface TypedUseSelectorHook<TState> {

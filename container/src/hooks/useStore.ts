@@ -5,6 +5,7 @@ import {
   incrementByAmount,
 } from "../store/features/counter/counterSlice";
 import { getAllProduct } from "../store/features/product/productSlice";
+import { setSelectedProvider } from "../store/features/providers/providersSlice";
 
 export default function useStore() {
   const dispatch = useStoreDispatch();
@@ -22,10 +23,15 @@ export default function useStore() {
     dispatch(getAllProduct());
   };
 
+  const changeProvider = (provider: string) => {
+    dispatch(setSelectedProvider(provider));
+  };
+
   return {
     incrementCounter,
     decrementCounter,
     incrementByAmountCounter,
     getProductList,
+    changeProvider,
   };
 }

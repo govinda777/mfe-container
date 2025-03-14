@@ -22,3 +22,9 @@ export interface ProductState {
 export interface CounterState {
   value: number;
 }
+
+// INFO (serif) : Providers State Types
+
+export interface ProvidersState {
+  selectedProvider: string;
+}
