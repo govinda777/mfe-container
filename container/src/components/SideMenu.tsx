@@ -44,14 +44,15 @@ const SideMenu: React.FC<SideMenuProps> = ({ className }) => {
   return (
     <div className={`bg-white shadow-md h-full ${className || ""}`}>
       <div className="py-4">
-        <Menu
-          onClick={onClick}
-          selectedKeys={[selectedMenuItem]}
-          mode="inline"
-          items={items}
-          className="border-0 h-full"
-          style={{ width: 200 }}
-        />
+      <Menu
+        onClick={onClick}
+        selectedKeys={[selectedMenuItem]}
+        mode="inline"
+        items={items}
+        className="border-0 h-full"
+        style={{ width: 200 }}
+        data-testid="menu"  // Adicionando um identificador para facilitar os testes
+      />
       </div>
     </div>
   );

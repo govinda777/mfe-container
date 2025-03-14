@@ -94,3 +94,5 @@ root.render(
     <App />
   </StoreProvider>
 );
+
+export default App;
