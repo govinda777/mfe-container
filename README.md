@@ -1,799 +1,584 @@
-## Mastering Micro Frontends: Creating Scalable Applications with React, Webpack 5, and TypeScript Type Safety
+# Documentação do Projeto Micro-Frontend
 
-Author: [Serif Colakel](https://github.com/serifcolakel)
-Code: [Github Repository Link](https://github.com/serifcolakel/mf-template)
+## Índice
 
-Embark on a transformative journey into the realm of micro frontends with our comprehensive article, "Mastering Micro Frontends: Creating Scalable Applications with React, Webpack 5, and TypeScript Type Safety." Delve into the cutting-edge approach that is reshaping modern web development, and learn how to build dynamic and scalable applications that are designed for maintainability, collaboration, and efficiency. Whether you're a seasoned developer or new to the field, this guide will equip you with the knowledge and tools to embrace the power of micro frontends and harness their potential for your projects.
+1. [Visão Geral do Projeto](#visão-geral-do-projeto)
+2. [Configuração e Instalação](#configuração-e-instalação)
+3. [Arquitetura](#arquitetura)
+4. [Gerenciamento de Estado](#gerenciamento-de-estado)
+5. [Componentes](#componentes)
+6. [Fluxo de Desenvolvimento](#fluxo-de-desenvolvimento)
+7. [Estrutura de Arquivos e Pastas](#estrutura-de-arquivos-e-pastas)
 
-## What Are Micro Frontends?
+## Visão Geral do Projeto
 
-Micro frontends are a new approach to web development that allows developers to build applications in a modular fashion. This means that each component of the application is developed independently, and then combined into a single application at runtime. This approach has many benefits, including increased maintainability, scalability, and collaboration.
+Este projeto é uma aplicação micro-frontend construída utilizando React, TypeScript e Webpack 5 Module Federation. Consiste em duas aplicações principais:
 
-🎉 Let's get started!
+1. **Aplicação Container**: A aplicação principal que hospeda os micro-frontends e fornece componentes compartilhados, gerenciamento de estado e utilitários.
+2. **Aplicação Remote**: Uma aplicação separada que consome componentes e estado da aplicação container.
 
-# Create a Container App With create-mf-app CLI
+### Tecnologias Utilizadas
 
-**You can follow these steps:**
+- **React**: Biblioteca frontend para construção de interfaces de usuário
+- **TypeScript**: Adiciona tipagem estática ao JavaScript
+- **Webpack 5**: Empacotador de módulos com Module Federation para arquitetura micro-frontend
+- **Redux Toolkit**: Biblioteca de gerenciamento de estado
+- **Ant Design**: Biblioteca de componentes de UI
+- **Tailwind CSS**: Framework CSS utilitário
 
-- Create a new folder. For example, **`micro-front-template`**. You can use the following command to create a new folder:
+## Configuração e Instalação
 
-```bash
-mkdir micro-front-template
-```
+### Pré-requisitos
 
-- Navigate to the project directory: Run the following command to navigate into your project directory:
+- Node.js (v14 ou superior)
+- npm ou yarn
 
-```bash
-cd micro-front-template
-```
+### Passos para Instalação
 
-- Create a new project: Run the following command to create a new project:
+1. Clone o repositório:
+   ```bash
+   git clone <url-do-repositório>
+   cd <diretório-do-repositório>
+   ```
 
-```bash
-npx create-mf-app container
-```
+2. Instale as dependências para a aplicação container:
+   ```bash
+   cd container
+   npm install
+   ```
 
-Question 1: **Pick the name of your app: (host)** : write **`container`** and press Enter.
-Question 2: **Project Type: (Use arrow keys)** : select **`Application`** and press Enter.
-Question 3: **Port number: (8080)** : write your port number and press Enter. For example, **`3000`** by default it is **`8080`**.
-Question 4: **Framework: (Use arrow keys)** : select **`React`** and press Enter.
-Question 5: **Language: (Use arrow keys)** : select **`typescript`** and press Enter.
-Question 6: **CSS: (Use arrow keys)** : select **`CSS`** and press Enter.
+3. Instale as dependências para a aplicação remote:
+   ```bash
+   cd ../remote
+   npm install
+   ```
 
-- Navigate to the project directory: Run the following command to navigate into your project directory:
+### Executando as Aplicações
 
-```bash
-cd container
-```
+1. Inicie a aplicação container:
+   ```bash
+   cd container
+   npm start
+   ```
 
-- Install the packages: Run the following command to install:
+2. Inicie a aplicação remote:
+   ```bash
+   cd remote
+   npm start
+   ```
 
-```bash
-npm i
-```
+3. Acesse as aplicações:
+   - Container: http://localhost:3000
+   - Remote: http://localhost:3001
 
-- Add the tailwind: Run the following command to add the tailwind:
+## Arquitetura
 
-```bash
-npm install -D tailwindcss
+### Abordagem Micro-Frontend
 
-npx tailwindcss init
-```
+Este projeto utiliza uma arquitetura micro-frontend, que permite o desenvolvimento e implantação independentes de aplicações frontend. Os principais benefícios incluem:
 
--- Add the tailwind config file: Run the following command to add the tailwind config file:
+- **Escalabilidade**: Equipes podem trabalhar em diferentes partes da aplicação independentemente
+- **Manutenibilidade**: Bases de código menores e focadas são mais fáceis de manter
+- **Flexibilidade Tecnológica**: Diferentes equipes podem usar diferentes tecnologias
+- **Implantação Independente**: Aplicações podem ser implantadas independentemente
 
-```js
-// tailwind.config.js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  theme: {
-    extend: {},
+### Module Federation
+
+O Module Federation do Webpack 5 é usado para compartilhar código entre aplicações em tempo de execução. Isso permite:
+
+- **Compartilhamento de Componentes**: A aplicação container expõe componentes que podem ser consumidos pela aplicação remote
+- **Compartilhamento de Estado**: A aplicação container expõe sua store Redux e utilitários relacionados
+- **Compartilhamento de Tipos**: Tipos TypeScript são compartilhados entre aplicações para segurança de tipos
+
+### Compartilhamento de Componentes
+
+Os componentes são compartilhados da aplicação container para a aplicação remote usando Module Federation. A aplicação container expõe componentes em seu arquivo webpack.config.js:
+
+```javascript
+// container/webpack.config.js
+new ModuleFederationPlugin({
+  name: "container",
+  filename: "remoteEntry.js",
+  exposes: {
+    "./Button": "./src/components/Button.tsx",
+    // Outros componentes expostos
   },
-  plugins: [],
-};
+  // ...
+})
 ```
 
-- Add the tailwind css file: Run the following command to add the tailwind css file:
+A aplicação remote consome esses componentes importando-os:
 
-```css
-/* ./src/index.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-- Add the tailwind css file to the index.tsx: Run the following command to add the tailwind css file to the index.tsx:
-
-```js
-// ./src/index.tsx
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-// ...
-```
-
-# Create a Remote App With create-mf-app CLI
-
-**You can follow these steps:**
-
-- Create a new folder. For example, **`micro-front-template`**. You can use the following command to create a new folder:
-
-```bash
-mkdir micro-front-template
-```
-
-- Navigate to the project directory: Run the following command to navigate into your project directory:
-
-```bash
-cd micro-front-template
-```
-
-- Create a new project: Run the following command to create a new project:
-
-```bash
-npx create-mf-app remote
-```
-
-Question 1: **Pick the name of your app: (host)** : write **`remote`** and press Enter.
-Question 2: **Project Type: (Use arrow keys)** : select **`Application`** and press Enter.
-Question 3: **Port number: (8080)** : write your port number and press Enter. For example, **`3001`** by default it is **`8080`**.
-Question 4: **Framework: (Use arrow keys)** : select **`React`** and press Enter.
-Question 5: **Language: (Use arrow keys)** : select **`typescript`** and press Enter.
-Question 6: **CSS: (Use arrow keys)** : select **`CSS`** and press Enter.
-
-- Navigate to the project directory: Run the following command to navigate into your project directory:
-
-```bash
-cd remote
-```
-
-- Install the packages: Run the following command to install:
-
-```bash
-npm i
-```
-
-- Add the tailwind: Run the following command to add the tailwind:
-
-```bash
-npm install -D tailwindcss
-
-npx tailwindcss init
-```
-
--- Add the tailwind config file: Run the following command to add the tailwind config file:
-
-```js
-// tailwind.config.js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  theme: {
-    extend: {},
+```javascript
+// remote/webpack.config.js
+new ModuleFederationPlugin({
+  name: "remote",
+  remotes: {
+    container: "container@http://localhost:3000/remoteEntry.js",
   },
-  plugins: [],
-};
+  // ...
+})
 ```
-
-- Add the tailwind css file: Run the following command to add the tailwind css file:
-
-```css
-/* ./src/index.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
-
-- Add the tailwind css file to the index.tsx: Run the following command to add the tailwind css file to the index.tsx:
-
-```js
-// ./src/index.tsx
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-
-// ...
-```
-
-# Create a UI Components from the Container App
-
-**You can follow these steps:**
-
-- Download the `clsx` & `class-variance-authority` package: Run the following command to download the package in the `container` & `remote` folder:
-
-```bash
-cd container
-npm i clsx class-variance-authority
-```
-
-```bash
-cd remote
-npm i clsx class-variance-authority
-```
-
-- Create a `Button.tsx` component in the `src/components` folder.
 
 ```tsx
-import React, { ComponentProps } from "react";
-import { type VariantProps, cva } from "class-variance-authority";
-import clsx from "clsx";
-
-type ButtonElementProps = ComponentProps<"button">;
-
-export interface ButtonProps
-  extends ButtonElementProps,
-    VariantProps<typeof buttonStyles> {
-  label?: string;
-  icon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
-  buttonWrapperClassName?: string;
-}
-
-const buttonStyles = cva(
-  "flex text-xs group flex-row gap-x-2 items-center justify-center disabled:!bg-gray-800",
-  {
-    variants: {
-      buttonType: {
-        primary: "bg-blue-500 text-white hover:bg-blue-600",
-        secondary: "bg-black text-white hover:bg-white hover:text-black",
-        error: "bg-error-600 text-white hover:bg-error-700",
-        warning: "bg-warning-500 text-white hover:bg-warning-600",
-        success: "bg-success-500 text-white hover:bg-success-600",
-        info: "bg-blue-500 text-white hover:bg-blue-600",
-        default: "bg-gray-400 text-white hover:bg-gray-500",
-      },
-      size: {
-        default: "h-[38px]",
-        sm: "h-8 !w-8",
-        lg: "h-12",
-        xl: "h-14",
-        xxl: "h-16",
-      },
-      padding: {
-        default: "px-5 py-2",
-        sm: "px-3 py-2",
-        lg: "px-5 py-3",
-        xl: "px-5 py-4",
-        xxl: "px-5 py-5",
-      },
-      rounded: {
-        default: "rounded-lg",
-        sm: "rounded-sm",
-        lg: "rounded-lg",
-        xl: "rounded-xl",
-        xxl: "rounded-2xl",
-        none: "rounded-none",
-        full: "rounded-full",
-      },
-      isFullWidth: {
-        true: "!w-full",
-        false: "w-auto",
-      },
-    },
-    compoundVariants: [{ buttonType: "primary", size: "default" }],
-    defaultVariants: {
-      buttonType: "primary",
-      size: "default",
-      rounded: "default",
-      padding: "default",
-      isFullWidth: false,
-    },
-  }
-);
-
-function Button({
-  label,
-  buttonType,
-  rounded,
-  padding,
-  size,
-  isFullWidth,
-  className,
-  ...buttonProps
-}: ButtonProps) {
-  return (
-    <div className={buttonProps.buttonWrapperClassName}>
-      <button
-        className={clsx(
-          className,
-          buttonStyles({
-            buttonType,
-            rounded,
-            padding,
-            size,
-            isFullWidth,
-          })
-        )}
-        type="button"
-        {...buttonProps}
-      >
-        {buttonProps.icon && <div>{buttonProps.icon}</div>}
-        {!!label && <label className="cursor-pointer">{label}</label>}
-        {buttonProps.rightIcon && <div>{buttonProps.rightIcon}</div>}
-      </button>
-    </div>
-  );
-}
-
-export default Button;
+// remote/src/pages/test/index.tsx
+import Button from "container/Button";
 ```
 
-# Webpack Configuration for Applications
+### Compartilhamento de Tipos
 
-- In the `container` folder, `webpack.config.js` file should be like this:
-
-```js
-const HtmlWebPackPlugin = require("html-webpack-plugin");
-const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
-
-// INFO (serif) : Your webpack config should be like this.
-const configs = {
-  appName: "container",
-  appFileName: "remoteEntry.js",
-  development: {
-    PUBLIC_PATH: "http://localhost:3000/",
-    REMOTE_PATH: "remote@http://localhost:3001/remoteEntry.js",
-    PORT: 3000,
-  },
-  production: {
-    PUBLIC_PATH: "http://localhost:3000/",
-    REMOTE_PATH: "remote@http://localhost:3001/remoteEntry.js",
-    PORT: 3000,
-  },
-};
-
-// INFO (serif) : Define the package.json dependencies.
-const deps = require("./package.json").dependencies;
-
-module.exports = (env, argv) => {
-  console.log({ env, argv, configs: configs[argv.mode] });
-
-  return {
-    output: {
-      // INFO (serif) : The output path for the build files.
-      publicPath: configs[argv.mode].PUBLIC_PATH,
-    },
-
-    resolve: {
-      // INFO (serif) : The extensions that should be used to resolve modules.
-      extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
-    },
-
-    // INFO (serif) : The configuration for the dev server.
-    devServer: {
-      hot: true, // INFO (serif) : Enable webpack's Hot Module Replacement feature
-      port: configs[argv.mode].PORT,
-      historyApiFallback: true,
-      allowedHosts: "all",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers":
-          "Origin, X-Requested-With, Content-Type, Accept",
-      },
-    },
-
-    // INFO (serif) : The module configuration.
-    module: {
-      rules: [
-        {
-          test: /\.m?js/,
-          type: "javascript/auto",
-          resolve: {
-            fullySpecified: false,
-          },
-        },
-        {
-          test: /\.(css|s[ac]ss)$/i,
-          use: ["style-loader", "css-loader", "postcss-loader"],
-        },
-        {
-          test: /\.(ts|tsx|js|jsx)$/,
-          exclude: /node_modules/,
-          use: {
-            loader: "babel-loader",
-          },
-        },
-      ],
-    },
-
-    // INFO (serif) : The plugins configuration.
-    plugins: [
-      new ModuleFederationPlugin({
-        name: configs.appName,
-        filename: configs.appFileName,
-        remotes: {
-          remote: configs[argv.mode].REMOTE_PATH,
-        },
-        exposes: {
-          // INFO (serif) : Expose the components.
-          "./Button": "./src/components/Button.tsx",
-        },
-        shared: {
-          ...deps,
-          react: {
-            singleton: true,
-            requiredVersion: deps.react,
-          },
-          "react-dom": {
-            singleton: true,
-            requiredVersion: deps["react-dom"],
-          },
-        },
-      }),
-      new HtmlWebPackPlugin({
-        template: "./src/index.html",
-      }),
-    ],
-  };
-};
-```
-
-- Create Test Page in `remote` folder.
-
-```tsx
-import React from "react";
-
-export default function TestPage() {
-  return <div className="text-blue-600 md:text-gray-600">Test Page</div>;
-}
-```
-
-- Add the `TestPage` to `remote` folder `webpack.config.js` file. In the `remote` folder, `webpack.config.js` file should be like this:
-
-```js
-const HtmlWebPackPlugin = require("html-webpack-plugin");
-const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
-
-// INFO (serif) : Your dependencies should be like this.
-const deps = require("./package.json").dependencies;
-
-// INFO (serif) : Your webpack config should be like this.
-const configs = {
-  appName: "remote",
-  appFileName: "remoteEntry.js",
-  development: {
-    PUBLIC_PATH: "http://localhost:3001/",
-    CONTAINER_PATH: "container@http://localhost:3000/remoteEntry.js",
-    PORT: 3001,
-  },
-  production: {
-    PUBLIC_PATH: "http://localhost:3001/",
-    CONTAINER_PATH: "container@http://localhost:3000/remoteEntry.js",
-    PORT: 3001,
-  },
-};
-
-module.exports = (env, argv) => {
-  console.log({ env, argv, configs: configs[argv.mode] });
-  return {
-    output: {
-      // INFO (serif) : The output path for the build files.
-      publicPath: configs[argv.mode].PUBLIC_PATH,
-    },
-
-    // INFO (serif) : The configuration for the dev server.
-    resolve: {
-      extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
-    },
-
-    // INFO (serif) : The configuration for the dev server.
-    devServer: {
-      hot: true, // INFO (serif) : Enable webpack's Hot Module Replacement feature
-      port: configs[argv.mode].PORT,
-      historyApiFallback: true, // INFO (serif) : When using the HTML5 History API, the index.html page will likely have to be served in place of any 404 responses.
-      allowedHosts: "all", // INFO (serif) : Allow all hosts
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers":
-          "Origin, X-Requested-With, Content-Type, Accept",
-      },
-    },
-
-    // INFO (serif) : The module configuration.
-    module: {
-      rules: [
-        {
-          test: /\.m?js/,
-          type: "javascript/auto",
-          resolve: {
-            fullySpecified: false,
-          },
-        },
-        {
-          test: /\.(css|s[ac]ss)$/i,
-          use: ["style-loader", "css-loader", "postcss-loader"],
-        },
-        {
-          test: /\.(ts|tsx|js|jsx)$/,
-          exclude: /node_modules/,
-          use: {
-            loader: "babel-loader",
-          },
-        },
-      ],
-    },
-
-    // INFO (serif) : The plugins configuration.
-    plugins: [
-      new ModuleFederationPlugin({
-        name: configs.appName,
-        filename: configs.appFileName,
-        remotes: {
-          container: configs[argv.mode].CONTAINER_PATH,
-        },
-        exposes: {
-          "./TestPage": "./src/pages/test/index.tsx", // INFO (serif) : your test page path
-        },
-        shared: {
-          ...deps,
-          react: {
-            singleton: true,
-            requiredVersion: deps.react,
-          },
-          "react-dom": {
-            singleton: true,
-            requiredVersion: deps["react-dom"],
-          },
-        },
-      }),
-      new HtmlWebPackPlugin({
-        template: "./src/index.html",
-      }),
-    ],
-  };
-};
-```
-
-- Start the `container` and `remote` projects.
-
-```bash
-cd container
-npm start
-```
-
-```bash
-cd remote
-npm start
-```
-
-🎉 Congratulations! Your project is ready.
-
-# Issue is How to integrate the components types to remote project?
-
-In this section, we will integrate the components types to remote project. You can choose one of the following methods.
-
-## Method 1: Copy the types to remote project
-
-## Method 3: Create a new package for types and publish it to npm
-## Method 4: Create a local types package and integrate it to remote project
-
-I will explain the `Method 4` in this section.
-
-- I will use [module-federation-types](https://www.npmjs.com/package/@cloudbeds/webpack-module-federation-types-plugin) package for this section.
-
-- Install the `module-federation-types` package to `container` project.
-
-```bash
-cd container
-npm i @cloudbeds/webpack-module-federation-types-plugin
-```
-
-- Create a new folder in root of `container` project and name it `federation.config.json`. It includes the exposed components types.
+Os tipos TypeScript são compartilhados entre aplicações usando arquivos de declaração. A aplicação container gera definições de tipos usando o pacote `@cloudbeds/webpack-module-federation-types-plugin`:
 
 ```json
+// container/federation.config.json
 {
   "name": "container",
   "exposes": {
-    "./Button": "./src/components/Button.tsx"
+    "./Button": "./src/components/Button.tsx",
+    "./types/storeState": "./src/types/storeState.ts"
+    // Outros componentes e tipos expostos
   }
 }
 ```
 
-- Then run the following command to generate the types.
+A aplicação remote inclui essas definições de tipos em seu arquivo `container.d.ts`:
 
-```bash
-npx make-federated-types
-```
-
-> If the `make-federated-types` command is not working and the error is like this: `container/tsconfig.json: Unexpected token in JSON at position 502`. You can check the `tsconfig.json` file and removed `,` from the end of the array.
-
-✅ The `tsconfig.json` file should be like this:
-
-```json
- "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ]
-```
-
-❌ Remove the `,` from the end of the array.
-
-```json
- "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext", ❌
-    ]
-```
-
-- Create new folder for types in `remote` project and name it `container.d.ts`. Then copy the generated types to this file.
-
-```ts
-/// <reference types="react" />
+```typescript
+// remote/src/container.d.ts
 declare module "container/Button" {
-  import React, { ComponentProps } from "react";
-  import { type VariantProps } from "class-variance-authority";
-  type ButtonElementProps = ComponentProps<"button">;
-  export interface ButtonProps
-    extends ButtonElementProps,
-      VariantProps<typeof buttonStyles> {
-    label?: string;
-    icon?: React.ReactNode;
-    rightIcon?: React.ReactNode;
-    buttonWrapperClassName?: string;
-  }
-  const buttonStyles: (
-    props?:
-      | ({
-          buttonType?:
-            | "error"
-            | "default"
-            | "success"
-            | "primary"
-            | "secondary"
-            | "warning"
-            | "info"
-            | null
-            | undefined;
-          size?: "default" | "sm" | "lg" | "xl" | "xxl" | null | undefined;
-          padding?: "default" | "sm" | "lg" | "xl" | "xxl" | null | undefined;
-          rounded?:
-            | "none"
-            | "default"
-            | "full"
-            | "sm"
-            | "lg"
-            | "xl"
-            | "xxl"
-            | null
-            | undefined;
-          isFullWidth?: boolean | null | undefined;
-        } & import("class-variance-authority/dist/types").ClassProp)
-      | undefined
-  ) => string;
-  function Button({
-    label,
-    buttonType,
-    rounded,
-    padding,
-    size,
-    isFullWidth,
-    className,
-    ...buttonProps
-  }: ButtonProps): React.JSX.Element;
-  export default Button;
+  // Definições de tipos para o componente Button
+}
+
+declare module "container/types/storeState" {
+  // Definições de tipos para o estado da store
 }
 ```
 
-- 🎉 Congratulations! The types are generated. The types will be generated in `types` folder in `dist` folder. Copy the `types` folder to `remote` project.
+## Gerenciamento de Estado
 
-- Add the `TestPage` component type to `container` project. Create a new file in `src` folder and name it `remote.d.ts`. Then copy the following code to this file.
+### Estrutura da Store Redux
 
-```ts
-/* eslint-disable */
-/// <reference types="react" />
+A aplicação utiliza Redux Toolkit para gerenciamento de estado. A store é configurada na aplicação container e compartilhada com a aplicação remote.
 
-declare module "remote/TestPage" {
-  function TestPage(): JSX.Element;
-  export default TestPage;
-}
+A store consiste em vários slices:
+
+1. **Counter Slice**: Gerencia um estado simples de contador
+   - Estado: `{ value: number }`
+   - Ações: `increment`, `decrement`, `incrementByAmount`
+
+2. **Product Slice**: Gerencia dados de produtos
+   - Estado: `{ products: ProductItem[] }`
+   - Ações: `setProducts`
+   - Thunks Assíncronos: `getAllProduct`
+
+3. **Providers Slice**: Gerencia o provedor selecionado
+   - Estado: `{ selectedProvider: string }`
+   - Ações: `setSelectedProvider`
+
+4. **Menu Slice**: Gerencia o item de menu selecionado
+   - Estado: `{ selectedMenuItem: string }`
+   - Ações: `setSelectedMenuItem`
+
+### Hooks Personalizados
+
+A aplicação fornece hooks personalizados para acessar a store Redux:
+
+1. **useStore**: Fornece acesso às ações da store
+   ```typescript
+   const { incrementCounter, decrementCounter, getProductList } = useStore();
+   ```
+
+2. **useStoreSelector**: Fornece acesso ao estado da store
+   ```typescript
+   const { value } = useStoreSelector((state) => state.counter);
+   ```
+
+3. **useStoreDispatch**: Fornece acesso à função dispatch
+   ```typescript
+   const dispatch = useStoreDispatch();
+   ```
+
+### Compartilhamento de Estado Entre Aplicações
+
+A aplicação container expõe sua store Redux e utilitários relacionados para a aplicação remote:
+
+```javascript
+// container/webpack.config.js
+new ModuleFederationPlugin({
+  exposes: {
+    "./hooks/useStore": "./src/hooks/useStore.ts",
+    "./hooks/useStoreSelector": "./src/hooks/useStoreSelector.ts",
+    "./providers/StoreProvider": "./src/providers/StoreProvider.tsx",
+    // Outros componentes e utilitários expostos
+  },
+  // ...
+})
 ```
 
-- Use the `Button` component in `remote` project. Fully types support.
+A aplicação remote envolve seu componente raiz com o StoreProvider do container:
 
 ```tsx
-// src/pages/test/index.tsx
-import Button from "container/Button";
-import React from "react";
+// remote/src/App.tsx
+import StoreProvider from "container/providers/StoreProvider";
+
+root.render(
+  <StoreProvider>
+    <App />
+  </StoreProvider>
+);
+```
+
+E usa os hooks do container para acessar a store:
+
+```tsx
+// remote/src/pages/test/index.tsx
+import useStore from "container/hooks/useStore";
+import { useStoreSelector } from "container/hooks/useStoreSelector";
 
 export default function TestPage() {
-  return (
-    <div className="space-y-2 ">
-      <h1 className="text-blue-600 md:text-gray-600">Test Page</h1>
-      <Button label="Test Button" buttonType={"error"} />
-      <Button label="Test Button" buttonType={"warning"} />
-      <Button label="Test Button" buttonType={"primary"} />
-      <Button label="Test Button" buttonType={"secondary"} />
-      <Button label="Test Button" buttonType={"info"} />
-    </div>
-  );
+  const { incrementCounter, getProductList } = useStore();
+  const { value } = useStoreSelector((state) => state.counter);
+  // ...
 }
 ```
 
-# Other issue with Tailwind CSS
+## Componentes
 
-If you are using the Tailwind CSS in your project, tailwind can generate all the `container` styles. But the `remote` project can not generate the styles. You can use the following method to solve this issue.
+### Componentes do Container
 
-- The i found the solution in `safeList`, you can check the [Safelist](https://tailwindcss.com/docs/optimizing-for-production#safelisting-specific-classes) documentation. You can define the `Safelist` in `tailwind.config.js` file in `container` project. Then you can access the styles in `remote` project.
+A aplicação container fornece vários componentes:
 
-❌ Don't forget to add the `safeList` to auto generated. It includes the only styles that you are using in your project.
+1. **Button**: Um componente de botão personalizável
+   ```tsx
+   <Button label="Clique em mim" buttonType="primary" onClick={handleClick} />
+   ```
 
-```js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  safelist: [
-    // width
-    { pattern: /w-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /w-\d+\/\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    // height
-    { pattern: /h-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /h-\d+\/\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    // padding
-    { pattern: /p-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /px-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /py-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /pt-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /pr-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /pb-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /pl-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    // margin
-    { pattern: /m-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /mx-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /my-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /mt-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /mr-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /mb-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /ml-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    // gap
-    { pattern: /gap-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /gap-x-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /gap-y-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    // space
-    { pattern: /space-x-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /space-y-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
+2. **Navbar**: Um componente de barra de navegação com seleção de provedor
+   ```tsx
+   <Navbar className="border-b" />
+   ```
 
-    // text
-    { pattern: /text/ },
+3. **SideMenu**: Um componente de menu lateral com itens de navegação
+   ```tsx
+   <SideMenu className="border-r" />
+   ```
 
-    // !important text
-    { pattern: /!text/ },
+### Componentes Remote
 
-    // background
-    { pattern: /bg/ },
+A aplicação remote fornece:
 
-    // !important bg
-    { pattern: /!bg/ },
+1. **TestPage**: Uma página que demonstra o uso de componentes e estado do container
+   ```tsx
+   <TestPage />
+   ```
 
-    // grid & row
-    { pattern: /grid/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /grid-cols-\d+/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    {
-      pattern: /grid-cols-none/,
-      variants: ["sm", "md", "lg", "xl", "desktop"],
-    },
+### Componentes Compartilhados
 
-    // flex
-    { pattern: /flex/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /justify/, variants: ["sm", "md", "lg", "xl", "desktop"] },
-    { pattern: /items/, variants: ["sm", "md", "lg", "xl", "desktop"] },
+Componentes compartilhados do container para a aplicação remote:
 
-    // rounded
-    { pattern: /rounded/ },
-    { pattern: /rounded-none/ },
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-};
+1. **Button**: Usado na aplicação remote para interações do usuário
+   ```tsx
+   import Button from "container/Button";
+   ```
+
+## Fluxo de Desenvolvimento
+
+### Adicionando Novos Recursos
+
+Para adicionar um novo recurso à aplicação:
+
+1. **Crie um novo slice** na aplicação container:
+   ```typescript
+   // container/src/store/features/novoRecurso/novoRecursoSlice.ts
+   import { createSlice } from "@reduxjs/toolkit";
+   
+   const initialState = {
+     // Estado inicial
+   };
+   
+   export const novoRecursoSlice = createSlice({
+     name: "novoRecurso",
+     initialState,
+     reducers: {
+       // Reducers
+     },
+   });
+   
+   export const { /* ações */ } = novoRecursoSlice.actions;
+   export default novoRecursoSlice.reducer;
+   ```
+
+2. **Adicione o reducer à store**:
+   ```typescript
+   // container/src/store/index.ts
+   import novoRecursoReducer from "./features/novoRecurso/novoRecursoSlice";
+   
+   export const store = configureStore({
+     reducer: {
+       // Reducers existentes
+       novoRecurso: novoRecursoReducer,
+     },
+   });
+   ```
+
+3. **Adicione o tipo de estado**:
+   ```typescript
+   // container/src/types/storeState.ts
+   export interface NovoRecursoState {
+     // Propriedades do estado
+   }
+   ```
+
+4. **Atualize o hook useStore**:
+   ```typescript
+   // container/src/hooks/useStore.ts
+   import { /* ações */ } from "../store/features/novoRecurso/novoRecursoSlice";
+   
+   export default function useStore() {
+     // Código existente
+     
+     const novaAcaoRecurso = () => {
+       dispatch(/* ação */);
+     };
+     
+     return {
+       // Funções existentes
+       novaAcaoRecurso,
+     };
+   }
+   ```
+
+5. **Atualize o arquivo container.d.ts** na aplicação remote:
+   ```typescript
+   // remote/src/container.d.ts
+   declare module "container/types/storeState" {
+     // Tipos existentes
+     export interface NovoRecursoState {
+       // Propriedades do estado
+     }
+   }
+   
+   declare module "container/hooks/useStoreSelector" {
+     import type { /* tipos existentes */, NovoRecursoState } from "container/types/storeState";
+     export type RootState = {
+       // Estado existente
+       novoRecurso: NovoRecursoState,
+     };
+     // Resto do arquivo
+   }
+   
+   declare module "container/hooks/useStore" {
+     function useStore(): {
+       // Funções existentes
+       novaAcaoRecurso: () => void,
+     };
+     export default useStore;
+   }
+   ```
+
+### Adicionando Novos Componentes
+
+Para adicionar um novo componente à aplicação container e expô-lo para a aplicação remote:
+
+1. **Crie o componente**:
+   ```tsx
+   // container/src/components/NovoComponente.tsx
+   import React from "react";
+   
+   interface NovoComponenteProps {
+     // Props
+   }
+   
+   const NovoComponente: React.FC<NovoComponenteProps> = (props) => {
+     // Implementação do componente
+   };
+   
+   export default NovoComponente;
+   ```
+
+2. **Exponha o componente** na configuração do webpack:
+   ```javascript
+   // container/webpack.config.js
+   new ModuleFederationPlugin({
+     exposes: {
+       // Exposições existentes
+       "./NovoComponente": "./src/components/NovoComponente.tsx",
+     },
+     // Resto da configuração
+   })
+   ```
+
+3. **Gere definições de tipos**:
+   ```json
+   // container/federation.config.json
+   {
+     "exposes": {
+       // Exposições existentes
+       "./NovoComponente": "./src/components/NovoComponente.tsx"
+     }
+   }
+   ```
+   
+   ```bash
+   npx make-federated-types
+   ```
+
+4. **Atualize o arquivo container.d.ts** na aplicação remote:
+   ```typescript
+   // remote/src/container.d.ts
+   declare module "container/NovoComponente" {
+     // Definições de tipos para o novo componente
+   }
+   ```
+
+5. **Use o componente** na aplicação remote:
+   ```tsx
+   // remote/src/pages/AlgumaPagina.tsx
+   import NovoComponente from "container/NovoComponente";
+   
+   const AlgumaPagina = () => {
+     return (
+       <div>
+         <NovoComponente />
+       </div>
+     );
+   };
+   ```
+
+## Estrutura de Arquivos e Pastas
+
+### Estrutura Geral do Projeto
+
+```
+.
+├── container/              # Aplicação container
+│   ├── src/
+│   │   ├── components/     # Componentes de UI reutilizáveis
+│   │   ├── hooks/          # Hooks React personalizados
+│   │   ├── providers/      # Provedores de contexto
+│   │   ├── services/       # Serviços de API
+│   │   ├── store/          # Configuração da store Redux e slices
+│   │   └── types/          # Definições de tipos TypeScript
+│   ├── package.json        # Dependências e scripts da aplicação container
+│   └── webpack.config.js   # Configuração do Webpack para a aplicação container
+│
+└── remote/                 # Aplicação remote
+    ├── src/
+    │   ├── pages/          # Páginas da aplicação
+    │   └── container.d.ts  # Definições de tipos para importações do container
+    ├── package.json        # Dependências e scripts da aplicação remote
+    └── webpack.config.js   # Configuração do Webpack para a aplicação remote
 ```
 
-# Conclusion
+### Detalhamento dos Arquivos e Pastas
 
-n this guide, we've explored the creation of a micro frontend application using React and the powerful Webpack 5 Module Federation. By breaking down the process into manageable steps, we've created a container app and a remote app, showcasing how different parts can come together seamlessly.
+#### Aplicação Container
 
-We've covered everything from setting up the project structure, configuring Webpack, and integrating the fantastic Tailwind CSS framework. We've even tackled the issue of sharing UI components and their types between the container and remote apps.
+##### Arquivos de Configuração
 
-Furthermore, by defining your components with specific types in the development environment, you can enhance the level of type safety across different repositories. TypeScript support becomes a powerful ally in ensuring that your components are used correctly and consistently, even when they're shared between different parts of your micro frontend application.
+- **container/.babelrc**: Configuração do Babel para transpilação de código JavaScript/TypeScript.
+- **container/.gitignore**: Lista de arquivos e pastas a serem ignorados pelo Git.
+- **container/federation.config.json**: Configuração para o plugin de federação de módulos, especificando quais componentes e tipos são expostos.
+- **container/package.json**: Define as dependências, scripts e metadados do projeto.
+- **container/tsconfig.json**: Configuração do TypeScript para o projeto.
+- **container/webpack.config.js**: Configuração do Webpack, incluindo o plugin de federação de módulos para compartilhamento de código.
 
-With TypeScript, you can accurately define the shape of your components, including their props and expected behavior. This approach not only helps catch potential errors during development but also provides clear documentation and guidance for other developers working with these components in remote repositories.
+##### Pasta src
 
-As a result, TypeScript support doesn't just offer a way to catch mistakes early on, but also establishes a solid foundation for collaboration and maintenance across different teams or projects. It ensures that the components' intended usage is adhered to, fostering a more robust and cohesive micro frontend architecture.
+- **container/src/App.tsx**: Componente principal da aplicação container, define o layout e a estrutura da aplicação.
+- **container/src/index.css**: Estilos CSS globais da aplicação.
+- **container/src/index.html**: Template HTML para a aplicação.
+- **container/src/index.ts**: Ponto de entrada da aplicação, importa e renderiza o componente App.
+- **container/src/remote.d.ts**: Definições de tipos para os componentes importados da aplicação remote.
 
-From defining UI components and their styles with Tailwind CSS to generating and sharing component types using innovative techniques, this guide has equipped you with a comprehensive understanding of building micro frontend applications.
+##### Pasta components
 
-By following these steps, you're now equipped to take on the exciting world of micro frontends and create scalable, maintainable applications that can be efficiently developed and deployed. Happy coding!
+- **container/src/components/Button.tsx**: Componente de botão reutilizável que é compartilhado com a aplicação remote.
+- **container/src/components/Navbar.tsx**: Componente de barra de navegação superior que inclui a seleção de provedor.
+- **container/src/components/SideMenu.tsx**: Componente de menu lateral que permite a navegação entre diferentes seções da aplicação.
 
-# References
+##### Pasta hooks
 
-- [Module Federation](https://webpack.js.org/concepts/module-federation/)
-- [React](https://reactjs.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Webpack](https://webpack.js.org/)
-- [Webpack 5 Module Federation](https://webpack.js.org/concepts/module-federation/)
+- **container/src/hooks/useStore.ts**: Hook personalizado que fornece acesso às ações da store Redux.
+- **container/src/hooks/useStoreDispatch.ts**: Hook personalizado que fornece acesso à função dispatch da store Redux.
+- **container/src/hooks/useStoreSelector.ts**: Hook personalizado que fornece acesso ao estado da store Redux.
+
+##### Pasta providers
+
+- **container/src/providers/StoreProvider.tsx**: Componente provedor que envolve a aplicação com o Provider do Redux.
+
+##### Pasta services
+
+- **container/src/services/product/index.ts**: Serviço para buscar dados de produtos de uma API externa.
+- **container/src/services/product/types.ts**: Definições de tipos para os dados de produtos.
+
+##### Pasta store
+
+- **container/src/store/index.ts**: Configuração principal da store Redux, combinando todos os reducers.
+- **container/src/store/features/counter/counterSlice.ts**: Slice Redux para o estado do contador.
+- **container/src/store/features/menu/menuSlice.ts**: Slice Redux para o estado do menu.
+- **container/src/store/features/product/productSlice.ts**: Slice Redux para o estado dos produtos.
+- **container/src/store/features/providers/providersSlice.ts**: Slice Redux para o estado dos provedores.
+
+##### Pasta types
+
+- **container/src/types/storeState.ts**: Definições de tipos para o estado da store Redux.
+
+#### Aplicação Remote
+
+##### Arquivos de Configuração
+
+- **remote/.babelrc**: Configuração do Babel para transpilação de código JavaScript/TypeScript.
+- **remote/.gitignore**: Lista de arquivos e pastas a serem ignorados pelo Git.
+- **remote/package.json**: Define as dependências, scripts e metadados do projeto.
+- **remote/tsconfig.json**: Configuração do TypeScript para o projeto.
+- **remote/webpack.config.js**: Configuração do Webpack, incluindo o plugin de federação de módulos para consumir código compartilhado.
+
+##### Pasta src
+
+- **remote/src/App.tsx**: Componente principal da aplicação remote.
+- **remote/src/container.d.ts**: Definições de tipos para os componentes e hooks importados da aplicação container.
+- **remote/src/index.css**: Estilos CSS globais da aplicação.
+- **remote/src/index.html**: Template HTML para a aplicação.
+- **remote/src/index.ts**: Ponto de entrada da aplicação, importa e renderiza o componente App.
+
+##### Pasta pages
+
+- **remote/src/pages/test/index.tsx**: Página de teste que demonstra o uso de componentes e estado do container.
+
+### Significado e Propósito dos Arquivos Principais
+
+#### Arquivos de Configuração
+
+- **webpack.config.js**: Este arquivo é crucial para a arquitetura micro-frontend, pois configura o Module Federation que permite o compartilhamento de código entre aplicações. Define quais componentes são expostos (no container) e consumidos (no remote).
+- **federation.config.json**: Define quais componentes e tipos são expostos para geração de tipos TypeScript, garantindo a segurança de tipos entre aplicações.
+- **tsconfig.json**: Configura o TypeScript para o projeto, definindo opções de compilação e verificação de tipos.
+- **package.json**: Define as dependências do projeto e scripts para desenvolvimento, build e execução.
+
+#### Arquivos de Aplicação
+
+- **App.tsx**: Define a estrutura principal da aplicação, incluindo layout, roteamento e componentes principais.
+- **index.ts**: Ponto de entrada da aplicação, responsável por renderizar o componente App e inicializar a aplicação.
+- **container.d.ts**: Arquivo crucial para a integração TypeScript entre aplicações, define os tipos para todos os componentes, hooks e estados compartilhados.
+
+#### Arquivos de Estado
+
+- **store/index.ts**: Configura a store Redux central, combinando todos os reducers e definindo o estado global da aplicação.
+- **features/*/Slice.ts**: Cada slice define uma parte do estado global, com seus próprios reducers e ações.
+- **types/storeState.ts**: Define os tipos TypeScript para o estado global, garantindo consistência e segurança de tipos.
+
+#### Arquivos de Componentes
+
+- **components/*.tsx**: Componentes React reutilizáveis que podem ser compartilhados entre aplicações.
+- **pages/*.tsx**: Componentes de página específicos da aplicação remote.
+
+#### Arquivos de Hooks
+
+- **hooks/useStore.ts**: Fornece uma interface simplificada para acessar ações da store Redux.
+- **hooks/useStoreSelector.ts**: Fornece uma interface tipada para acessar o estado da store Redux.
+- **hooks/useStoreDispatch.ts**: Fornece acesso tipado à função dispatch da store Redux.
+
+#### Arquivos de Serviços
+
+- **services/*/index.ts**: Implementa a lógica de comunicação com APIs externas.
+- **services/*/types.ts**: Define os tipos para os dados recebidos e enviados para APIs externas.
