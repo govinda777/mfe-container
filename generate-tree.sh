@@ -17,8 +17,8 @@ if [ ! -d "$TARGET_DIR" ]; then
   exit 1
 fi
 
-# Usa find para listar arquivos e diretórios, excluindo 'node_modules'
-find "$TARGET_DIR" -type d -name "node_modules" -prune -o -print | sed 's|[^/]*/|- |g' | awk '{
+# Usa find para listar arquivos e diretórios, excluindo 'node_modules' e '.git'
+find "$TARGET_DIR" \( -type d -name "node_modules" -o -name ".git" \) -prune -o -print | sed 's|[^/]*/|- |g' | awk '{
   gsub(/- /, "|   ")
   print
 }'
