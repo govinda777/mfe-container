@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Select, Typography } from "antd";
+import { Row, Col, Typography, Select } from "antd";
 import type { SelectProps } from "antd";
 import useStore from "../hooks/useStore";
 import { useStoreSelector } from "../hooks/useStoreSelector";
@@ -25,17 +25,17 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
   };
 
   return (
-    <div className={className} style={{ background: "#fff", padding: "16px" }}>
-      <Row justify="space-between" align="middle">
-        {/* Título à esquerda */}
-        <Col>
-          <Title level={4} style={{ margin: 0, color: "red" }}>
+    <div className={className} style={{ background: "#fff" }}>
+      <Row align="middle">
+        {/* 1ª Coluna: Título à esquerda */}
+        <Col span={4}>
+          <Title level={3} style={{ margin: 0, color: "red" }}>
             Container App
           </Title>
         </Col>
 
-        {/* Combo à direita */}
-        <Col>
+        {/* 2ª Coluna: combo no centro (textAlign: center) */}
+        <Col span={2}>
           <Select
             value={selectedProvider}
             onChange={handleProviderChange}
@@ -44,6 +44,9 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
             placeholder="Select Provider"
           />
         </Col>
+
+        {/* 3ª Coluna: vazia ou para outro conteúdo (permite combo ficar no centro real) */}
+        <Col span={8} />
       </Row>
     </div>
   );
