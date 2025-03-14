@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, lazy } from "react";
 import * as ReactDOMClient from "react-dom/client";
 import { Layout } from "antd";            // <--- IMPORTAMOS O LAYOUT DO ANTD
 import "./index.css";
@@ -7,9 +7,17 @@ import StoreProvider from "./providers/StoreProvider";
 import Navbar from "./components/Navbar";
 import SideMenu from "./components/SideMenu";
 import { useStoreSelector } from "./hooks/useStoreSelector";
+import FallbackTestPage from "./components/FallbackTestPage";
 
-// Pegamos o TestPage remotamente
-const TestPage = React.lazy(() => import("remote/TestPage"));
+// Pegamos o TestPage remotamente com tratamento de erro
+const TestPage = lazy(() => 
+  import("remote/TestPage")
+    .catch(() => {
+      console.warn("Remote TestPage failed to load. Using fallback component.");
+      // Use type assertion to resolve TypeScript error
+      return { default: FallbackTestPage } as typeof import("remote/TestPage");
+    })
+);
 
 // Desestruturamos os componentes do Layout para facilitar
 const { Header, Sider, Content, Footer } = Layout;

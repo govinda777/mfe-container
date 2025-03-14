@@ -70,7 +70,29 @@ module.exports = (env, argv) => {
         name: configs.appName,
         filename: configs.appFileName,
         remotes: {
-          remote: configs[argv.mode].REMOTE_PATH,
+          // Use a promise-based approach for loading the remote
+          // This allows the container to continue loading even if the remote is unavailable
+          remote: `promise new Promise(resolve => {
+            const remoteUrl = "${configs[argv.mode].REMOTE_PATH}";
+            const script = document.createElement('script');
+            script.src = remoteUrl.split('@')[1];
+            
+            script.onload = () => {
+              // When the script loads successfully, resolve with the remote module
+              const remote = window.remote;
+              resolve(remote);
+            };
+            
+            script.onerror = () => {
+              // When the script fails to load, resolve with an empty module
+              // This allows the container to continue loading
+              console.warn("[Module Federation] Remote 'remote' failed to load. Using fallback.");
+              resolve({});
+            };
+            
+            // Add the script to the document to start loading
+            document.head.appendChild(script);
+          })`,
         },
         exposes: {
           "./Button": "./src/components/Button.tsx",
