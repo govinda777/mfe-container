@@ -29,22 +29,36 @@ const App = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      <Navbar />
+    <div className="flex flex-col h-screen bg-gray-50">
+      {/* Top Navbar with combo */}
+      <header className="w-full z-10">
+        <Navbar className="border-b" />
+      </header>
+      
+      {/* Main content area with side menu and MFE */}
       <div className="flex flex-1 overflow-hidden">
-        <SideMenu />
-        <div className="flex flex-col flex-1">
-          <div className="flex-1 p-4 overflow-auto">
-            <Suspense fallback={<div>Loading...</div>}>
-              {renderContent()}
-            </Suspense>
-          </div>
-          <div className="bg-gray-100 p-4 border-t">
-            <div className="container mx-auto">
-              <h2 className="text-2xl font-bold text-center">Footer</h2>
+        {/* Left side menu */}
+        <aside className="w-64 border-r shadow-sm">
+          <SideMenu />
+        </aside>
+        
+        {/* Center content area with MFE */}
+        <main className="flex-1 flex flex-col">
+          <div className="flex-1 p-6 overflow-auto">
+            <div className="bg-white rounded-lg shadow-sm p-4 max-w-5xl mx-auto">
+              <Suspense fallback={<div className="text-center p-8">Loading...</div>}>
+                {renderContent()}
+              </Suspense>
             </div>
           </div>
-        </div>
+          
+          {/* Footer */}
+          <footer className="bg-white border-t p-4 shadow-inner">
+            <div className="container mx-auto">
+              <h2 className="text-xl font-bold text-center">Footer</h2>
+            </div>
+          </footer>
+        </main>
       </div>
     </div>
   );
