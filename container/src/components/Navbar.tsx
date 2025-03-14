@@ -1,8 +1,10 @@
 import React from "react";
-import { Select } from "antd";
+import { Row, Col, Select, Typography } from "antd";
 import type { SelectProps } from "antd";
 import useStore from "../hooks/useStore";
 import { useStoreSelector } from "../hooks/useStoreSelector";
+
+const { Title } = Typography;
 
 const providerOptions: SelectProps["options"] = [
   { value: "provider1", label: "Provider 1" },
@@ -23,10 +25,17 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
   };
 
   return (
-    <div className={`w-full bg-white shadow-md ${className || ""}`}>
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between items-center py-4">
-          <div className="text-xl font-bold text-red-600">Container App</div>
+    <div className={className} style={{ background: "#fff", padding: "16px" }}>
+      <Row justify="space-between" align="middle">
+        {/* Título à esquerda */}
+        <Col>
+          <Title level={4} style={{ margin: 0, color: "red" }}>
+            Container App
+          </Title>
+        </Col>
+
+        {/* Combo à direita */}
+        <Col>
           <Select
             value={selectedProvider}
             onChange={handleProviderChange}
@@ -34,8 +43,8 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
             style={{ width: 150 }}
             placeholder="Select Provider"
           />
-        </div>
-      </div>
+        </Col>
+      </Row>
     </div>
   );
 };

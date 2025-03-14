@@ -1,71 +1,85 @@
 import React, { Suspense } from "react";
 import * as ReactDOMClient from "react-dom/client";
-
+import { Layout } from "antd";            // <--- IMPORTAMOS O LAYOUT DO ANTD
 import "./index.css";
+
 import StoreProvider from "./providers/StoreProvider";
 import Navbar from "./components/Navbar";
 import SideMenu from "./components/SideMenu";
 import { useStoreSelector } from "./hooks/useStoreSelector";
 
+// Pegamos o TestPage remotamente
 const TestPage = React.lazy(() => import("remote/TestPage"));
+
+// Desestruturamos os componentes do Layout para facilitar
+const { Header, Sider, Content, Footer } = Layout;
 
 const App = () => {
   const { selectedMenuItem } = useStoreSelector((state) => state.menu);
 
-  // Function to render the appropriate component based on the selected menu item
+  // Verifica o menu selecionado e decide que conteúdo renderizar
   const renderContent = () => {
     switch (selectedMenuItem) {
       case "home":
         return <TestPage />;
       case "products":
-        return <div className="p-4">Products Page Content</div>;
+        return <div>Products Page Content</div>;
       case "about":
-        return <div className="p-4">About Page Content</div>;
+        return <div>About Page Content</div>;
       case "contact":
-        return <div className="p-4">Contact Page Content</div>;
+        return <div>Contact Page Content</div>;
       default:
         return <TestPage />;
     }
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      {/* Top Navbar with combo */}
-      <header className="w-full z-10">
-        <Navbar className="border-b" />
-      </header>
-      
-      {/* Main content area with side menu and MFE */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left side menu */}
-        <aside className="w-64 border-r shadow-sm">
+    <Layout style={{ minHeight: "100vh" }}>
+      {/* HEADER: pode conter o seu <Navbar /> com o combo de Providers */}
+      <Header style={{ backgroundColor: "#fff", padding: "0 16px" }}>
+        <Navbar />
+      </Header>
+
+      {/* CORPO: outro layout para dividir em Sider (menu) + Conteúdo */}
+      <Layout>
+        {/* SIDER: barra lateral com seu <SideMenu /> */}
+        <Sider
+          width={200}
+          style={{
+            backgroundColor: "#fff",
+            borderRight: "1px solid #f0f0f0",
+          }}
+        >
           <SideMenu />
-        </aside>
-        
-        {/* Center content area with MFE */}
-        <main className="flex-1 flex flex-col">
-          <div className="flex-1 p-6 overflow-auto">
-            <div className="bg-white rounded-lg shadow-sm p-4 max-w-5xl mx-auto">
-              <Suspense fallback={<div className="text-center p-8">Loading...</div>}>
+        </Sider>
+
+        {/* CONTEÚDO + FOOTER */}
+        <Layout style={{ padding: "0 24px 24px" }}>
+          <Content style={{ margin: "16px 0", minHeight: 280 }}>
+            <div
+              style={{
+                backgroundColor: "#fff",
+                padding: 24,
+                borderRadius: 6,
+                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+              }}
+            >
+              <Suspense fallback={<div>Carregando...</div>}>
                 {renderContent()}
               </Suspense>
             </div>
-          </div>
-          
-          {/* Footer */}
-          <footer className="bg-white border-t p-4 shadow-inner">
-            <div className="container mx-auto">
-              <h2 className="text-xl font-bold text-center">Footer</h2>
-            </div>
-          </footer>
-        </main>
-      </div>
-    </div>
+          </Content>
+
+          <Footer style={{ textAlign: "center" }}>Footer</Footer>
+        </Layout>
+      </Layout>
+    </Layout>
   );
 };
 
-const container = document.getElementById("app");
-const root = ReactDOMClient.createRoot(container!);
+// Renderiza a aplicação
+const container = document.getElementById("app")!;
+const root = ReactDOMClient.createRoot(container);
 
 root.render(
   <StoreProvider>
