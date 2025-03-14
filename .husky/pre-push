@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run the e2e tests using the run-tests.sh script
+echo "Running e2e tests..."
+./run-tests.sh
+
+# Exit with the status of the test command
+exit $?

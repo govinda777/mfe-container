@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Change to the container directory
+cd container
+
+# Run unit tests
+echo "Running unit tests..."
+npm test
+
+# Exit with the status of the test command
+exit $?
