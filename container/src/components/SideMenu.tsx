@@ -27,6 +27,7 @@ const items: MenuProps["items"] = [
   getItem("Products", "products"),
   getItem("About", "about"),
   getItem("Contact", "contact"),
+  getItem("Event Bus Demo", "event-bus"),
 ];
 
 interface SideMenuProps {

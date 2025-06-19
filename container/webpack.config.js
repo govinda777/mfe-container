@@ -7,11 +7,13 @@ const configs = {
   development: {
     PUBLIC_PATH: "http://localhost:3000/",
     REMOTE_PATH: "remote@http://localhost:3001/remoteEntry.js",
+    REMOTE_EVENT_BUS_PATH: "remoteEventBus@http://localhost:3002/remoteEntry.js",
     PORT: 3000,
   },
   production: {
     PUBLIC_PATH: "http://localhost:3000/",
     REMOTE_PATH: "remote@http://localhost:3001/remoteEntry.js",
+    REMOTE_EVENT_BUS_PATH: "remoteEventBus@http://localhost:3002/remoteEntry.js",
     PORT: 3000,
   },
 };
@@ -93,12 +95,34 @@ module.exports = (env, argv) => {
             // Add the script to the document to start loading
             document.head.appendChild(script);
           })`,
+          remoteEventBus: `promise new Promise(resolve => {
+            const remoteUrl = "${configs[argv.mode].REMOTE_EVENT_BUS_PATH}";
+            const script = document.createElement('script');
+            script.src = remoteUrl.split('@')[1];
+            
+            script.onload = () => {
+              // When the script loads successfully, resolve with the remote module
+              const remote = window.remoteEventBus;
+              resolve(remote);
+            };
+            
+            script.onerror = () => {
+              // When the script fails to load, resolve with an empty module
+              // This allows the container to continue loading
+              console.warn("[Module Federation] Remote 'remoteEventBus' failed to load. Using fallback.");
+              resolve({});
+            };
+            
+            // Add the script to the document to start loading
+            document.head.appendChild(script);
+          })`,
         },
         exposes: {
           "./Button": "./src/components/Button.tsx",
           "./hooks/useStore": "./src/hooks/useStore.ts",
           "./hooks/useStoreSelector": "./src/hooks/useStoreSelector.ts",
           "./providers/StoreProvider": "./src/providers/StoreProvider.tsx",
+          "./services/eventBus": "./src/services/eventBus.ts",
         },
         shared: {
           ...deps,

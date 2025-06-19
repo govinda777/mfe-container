@@ -10,6 +10,9 @@ import SideMenu from "./components/SideMenu";
 import { useStoreSelector } from "./hooks/useStoreSelector";
 import FallbackTestPage from "./components/FallbackTestPage";
 
+// Initialize event bus
+import "./services/eventBus";
+
 // Pegamos o TestPage remotamente com tratamento de erro
 const TestPage = lazy(() => 
   import("remote/TestPage")
@@ -17,6 +20,27 @@ const TestPage = lazy(() =>
       console.warn("Remote TestPage failed to load. Using fallback component.");
       // Use type assertion to resolve TypeScript error
       return { default: FallbackTestPage } as typeof import("remote/TestPage");
+    })
+);
+
+// Pegamos o TestPage do remoteEventBus
+const EventBusTestPage = lazy(() => 
+  import("remoteEventBus/TestPage")
+    .catch(() => {
+      console.warn("Remote Event Bus TestPage failed to load. Using fallback component.");
+      // Create a fallback component that shows event bus demo
+      const EventBusFallback = () => (
+        <div className="p-6">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <h2 className="text-lg font-semibold text-red-800 mb-2">Event Bus Demo Not Available</h2>
+            <p className="text-red-600">The remoteEventBus micro frontend is not running.</p>
+            <p className="text-red-600 mt-2">
+              To test the event bus communication, please start the remoteEventBus server on port 3002.
+            </p>
+          </div>
+        </div>
+      );
+      return { default: EventBusFallback };
     })
 );
 
@@ -37,6 +61,8 @@ const App = () => {
         return <div>About Page Content</div>;
       case "contact":
         return <div>Contact Page Content</div>;
+      case "event-bus":
+        return <EventBusTestPage />;
       default:
         return <TestPage />;
     }
